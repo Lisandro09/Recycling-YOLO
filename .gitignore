@@ -2,6 +2,12 @@
 __pycache__/
 *.py[codz]
 *$py.class
+.ipynb_checkpoints/
+
+# data & weights
+data/raw/
+weights/
+runs/
 
 # C extensions
 *.so
