@@ -1,1 +1,11 @@
-
+torch>=2.2
+torchvision
+pandas
+numpy
+matplotlib
+pyyaml
+tqdm
+jupyter
+gradio           # or streamlit
+scikit-learn
+opencv-python
