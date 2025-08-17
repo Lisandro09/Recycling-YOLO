@@ -1,0 +1,6 @@
+00_setup.ipynb                # env checks; torch/cuda; YOLO sanity test
+01_eda.ipynb                  # class balance + sample grids
+02_prepare_yolo_dataset.ipynb # run converters; build splits
+03_train_yolov5.ipynb         # training commands + tracking
+04_eval_and_visuals.ipynb     # mAP/PR curves/confusion matrix assets
+05_notebook_demo_widgets.ipynb# Gradio/Streamlit prototype (widgets)
