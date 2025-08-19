@@ -1,0 +1,6 @@
+train: data/processed/images/train
+val:   data/processed/images/val
+test:  data/processed/images/test
+
+nc: 4
+names: [plastic_bottle, aluminum_can, glass_bottle, metal_can]
