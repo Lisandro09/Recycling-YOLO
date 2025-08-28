@@ -1,5 +1,0 @@
-plastic_bottle
-glass_bottle
-metal_can
-other_plastic
-plastic_film
