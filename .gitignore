@@ -5,6 +5,7 @@ __pycache__/
 .ipynb_checkpoints/
 
 # data & weights
+data/processed/
 data/raw/
 weights/
 runs/
