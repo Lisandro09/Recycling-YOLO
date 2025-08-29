@@ -7,8 +7,12 @@ __pycache__/
 # data & weights
 data/processed/
 data/raw/
-weights/
-runs/
+weights/*
+runs/*
+
+#test runs and other data
+notebooks/runs/
+zidane.jpg
 
 # C extensions
 *.so
