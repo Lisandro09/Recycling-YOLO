@@ -3,7 +3,7 @@
 #val:   C:/Users/lisan/Jupyter Notebook Projects/Recycling-YOLO/data/processed/images/val
 #test:  C:/Users/lisan/Jupyter Notebook Projects/Recycling-YOLO/data/processed/images/test
 
-#For training of the project used Kaggle, so directories of processed data reflect the name of the processed folders uplaoded to kaggle
+#For training of the model kaggle was used and processed imgs was uploaded to kaggle, so directories of processed data reflect the name of the processed folders uplaoded to kaggle
 train: /kaggle/input/processed-taco/processed/images/train
 val:   /kaggle/input/processed-taco//processed/images/val
 test:  /kaggle/input/processed-taco//processed/images/test
