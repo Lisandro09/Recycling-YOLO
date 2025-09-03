@@ -10,7 +10,7 @@ data/raw/
 runs/*
 
 # app
-app/tmp
+app/tmp/
 
 #test runs and other data
 notebooks/runs/
