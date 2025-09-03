@@ -7,7 +7,6 @@ __pycache__/
 # data & weights
 data/processed/
 data/raw/
-weights/*
 runs/*
 
 #test runs and other data
