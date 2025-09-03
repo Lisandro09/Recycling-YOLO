@@ -9,6 +9,9 @@ data/processed/
 data/raw/
 runs/*
 
+# app
+app/tmp
+
 #test runs and other data
 notebooks/runs/
 zidane.jpg
