@@ -4,14 +4,12 @@
 #test:  C:/Users/lisan/Jupyter Notebook Projects/Recycling-YOLO/data/processed/images/test
 
 #For training of the model kaggle was used and processed imgs was uploaded to kaggle, so directories of processed data reflect the name of the processed folders uplaoded to kaggle
-train: /kaggle/input/processed-taco/processed/images/train
-val:   /kaggle/input/processed-taco//processed/images/val
-test:  /kaggle/input/processed-taco//processed/images/test
+train: /kaggle/input/processed/processed/images/train
+val:   /kaggle/input/processed/processed/images/val
+test:  /kaggle/input/processed/processed/images/test
 
-nc: 5
+nc: 3
 names:
 - plastic_bottle
 - glass_bottle
 - metal_can
-- other_plastic
-- plastic_film
