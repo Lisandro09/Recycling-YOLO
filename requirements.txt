@@ -10,5 +10,4 @@ PyYAML
 tqdm
 jupyter
 scikit-learn
-# pull YOLOv5 code (detect.py) during build:
-git+https://github.com/ultralytics/yolov5.git
+
