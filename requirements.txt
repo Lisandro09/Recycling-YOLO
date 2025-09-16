@@ -1,11 +1,14 @@
-torch>=2.2
-torchvision
+torch>=2.1.0+cpu
+torchvision>=0.16.0+cpu
 pandas
+Pillow
 numpy
 matplotlib
-pyyaml
+PyYAML
 tqdm
 jupyter
-gradio           # or streamlit
+streamlit>=1.33
 scikit-learn
 opencv-python
+# pull YOLOv5 code (detect.py) during build:
+git+https://github.com/ultralytics/yolov5.git
