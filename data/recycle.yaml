@@ -1,13 +1,6 @@
-#These directories work for local PC training, to train with training_exec.ipynb, uncommnet so directories work
-#train: C:/Users/lisan/Jupyter Notebook Projects/Recycling-YOLO/data/processed/images/train
-#val:   C:/Users/lisan/Jupyter Notebook Projects/Recycling-YOLO/data/processed/images/val
-#test:  C:/Users/lisan/Jupyter Notebook Projects/Recycling-YOLO/data/processed/images/test
-
-#For training of the model kaggle was used and processed imgs was uploaded to kaggle, so directories of processed data reflect the name of the processed folders uplaoded to kaggle
-train: /kaggle/input/processed/processed/images/train
-val:   /kaggle/input/processed/processed/images/val
-test:  /kaggle/input/processed/processed/images/test
-
+train: data/processed/images/train
+val: data/processed/images/val
+test: data/processed/images/test
 nc: 3
 names:
 - plastic_bottle

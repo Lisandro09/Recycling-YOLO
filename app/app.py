@@ -12,6 +12,78 @@ import time
 import streamlit as st
 import pandas as pd
 from PIL import Image
+import cv2
+import numpy as np
+
+# ---- LABEL SIZE OVERLAY ----
+def draw_yolo_overlays(
+    img_path: Path,
+    label_paths: list[Path],
+    class_names: list[str] | None,
+    display_size: tuple[int, int],   # (H, W) you want to show in the app
+    box_thickness: int = 2,
+    font_scale: float = 0.6,
+    font_thickness: int = 1,
+):
+    # load + resize for display
+    im = cv2.cvtColor(cv2.imread(str(img_path)), cv2.COLOR_BGR2RGB)
+    orig_h, orig_w = im.shape[:2]
+    disp_h, disp_w = display_size
+    im_disp = cv2.resize(im, (disp_w, disp_h), interpolation=cv2.INTER_LINEAR)
+
+    overlay = im_disp.copy()
+
+    # simple fixed palette
+    palette = [
+        (255, 99, 71),   # tomato
+        (30, 144, 255),  # dodgerblue
+        (60, 179, 113),  # mediumseagreen
+        (238, 130, 238), # violet
+        (255, 215, 0),   # gold
+    ]
+
+    def denorm(xc, yc, bw, bh):
+        # convert YOLO norm (0..1) → pixels on display image
+        x1 = int((xc - bw/2) * disp_w)
+        y1 = int((yc - bh/2) * disp_h)
+        x2 = int((xc + bw/2) * disp_w)
+        y2 = int((yc + bh/2) * disp_h)
+        return max(0,x1), max(0,y1), min(disp_w-1,x2), min(disp_h-1,y2)
+
+    for lp in label_paths:
+        for line in lp.read_text().splitlines():
+            if not line.strip():
+                continue
+            parts = line.split()
+            if len(parts) < 5:
+                continue
+            cls = int(parts[0])
+            xc, yc, bw, bh = map(float, parts[1:5])
+            conf = None
+            if len(parts) >= 6:
+                try: conf = float(parts[5])
+                except: conf = None
+
+            x1, y1, x2, y2 = denorm(xc, yc, bw, bh)
+            color = palette[cls % len(palette)]
+
+            # draw border
+            cv2.rectangle(im_disp, (x1, y1), (x2, y2), color, box_thickness)
+
+            # label text
+            label = class_names[cls] if class_names and 0 <= cls < len(class_names) else str(cls)
+            if conf is not None:
+                label = f"{label} {conf:.2f}"
+
+            # text background
+            (tw, th), _ = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, font_scale, font_thickness)
+            tx1, ty1 = x1, max(0, y1 - th - 6)
+            tx2, ty2 = x1 + tw + 6, y1
+            cv2.rectangle(im_disp, (tx1, ty1), (tx2, ty2), color, -1)
+            cv2.putText(im_disp, label, (x1 + 3, y1 - 4),
+                        cv2.FONT_HERSHEY_SIMPLEX, font_scale, (0,0,0), font_thickness, cv2.LINE_AA)
+    return im_disp
+
 
 # ---- CONFIG ----
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -29,16 +101,25 @@ st.set_page_config(page_title="Recycle YOLO Demo", layout="wide")
 # ---- SIDEBAR ----
 st.sidebar.title("⚙️ Settings")
 weights_path = st.sidebar.text_input("Weights (.pt)", str(DEFAULT_WEIGHTS))
-imgsz_choice = st.sidebar.selectbox("Image size", [640, 512, 416], index=0)
-imgsz = (int(imgsz_choice), int(imgsz_choice))  # making it iterable (h, w)
-conf_thres = st.sidebar.slider("Confidence threshold", 0.05, 0.80, 0.25, 0.01)
-iou_thres = st.sidebar.slider("NMS IoU", 0.10, 0.90, 0.45, 0.01)
+imgsz = st.sidebar.selectbox("Image size", [768, 640, 512, 416], index=0)  
+conf_thres = st.sidebar.slider("Confidence threshold", 0.05, 0.90, 0.25, 0.01) # third augment is default
+iou_thres = st.sidebar.slider("NMS IoU", 0.10, 0.90, 0.50, 0.01)  # a tad higher
+use_tta = st.sidebar.checkbox("Test-time augmentation (slower, more recall)", value=True) 
 
 st.title("♻️ Recyclables Detection — YOLOv5")
 st.write("Upload an image; the model will draw boxes and list predictions with confidence.")
 
+st.sidebar.markdown(f"**Using weights:** `{weights_path}`")
+names_path = REPO_ROOT / "data" / "processed" / "names.txt"
+if names_path.exists():
+    st.sidebar.markdown("**Classes:** " + ", ".join([n.strip() for n in names_path.read_text().splitlines()]))
+else:
+    st.sidebar.warning("names.txt not found; class table may be blank.")
+
 # ---- LEFT: UPLOAD & RUN ----
 col1, col2 = st.columns([2, 1], gap="large")
+
+imgsz_pair = (int(imgsz), int(imgsz)) 
 
 with col1:
     uploaded = st.file_uploader("Upload an image", type=["jpg","jpeg","png"])
@@ -57,19 +138,45 @@ with col1:
         yolo_detect(
             weights=str(weights_path),
             source=str(src_path),
-            imgsz=imgsz,
+            imgsz=imgsz_pair,
             conf_thres=conf_thres,
             iou_thres=iou_thres,
             save_txt=True,
             save_conf=True,
+            nosave=True, 
             project=str(out_root),
             name=run_name,
             exist_ok=True,
-            device="cpu"  # set "0" if you run on GPU
+            device="cpu", 
+            augment=use_tta,         # <-- TTA
+            agnostic_nms=False,      # usually fine off; set True if classes overlap heavily
+            max_det=300,
+            line_thickness=2,  # thinner boxes  
+
         )
 
         # Find the saved result image
         exp_dir = out_root / run_name
+
+        txts = list(exp_dir.rglob("*.txt"))
+
+        # build the display image using our renderer
+        names = [n.strip() for n in names_path.read_text().splitlines()] if names_path.exists() else None
+        
+        # display at the chosen imgsz (square):
+        H = W = int(imgsz)
+        rendered = draw_yolo_overlays(
+            img_path=src_path,
+            label_paths=txts,
+            class_names=names,
+            display_size=(H, W),
+            box_thickness=2,     # tweak in sidebar if you like
+            font_scale=0.6,
+            font_thickness=1,
+        )
+        
+        st.image(Image.fromarray(rendered), caption="Detections", use_container_width=True)
+        
         # detect.py writes an image with the same filename in exp_dir
         result_img_path = exp_dir / uploaded.name
         # Sometimes detect.py saves under 'exp' then subfolders; fallback:
@@ -77,11 +184,6 @@ with col1:
             # Grab first image in exp_dir
             imgs = list(exp_dir.rglob("*.jpg")) + list(exp_dir.rglob("*.png"))
             result_img_path = imgs[0] if imgs else None
-
-        if result_img_path and result_img_path.exists():
-            st.image(Image.open(result_img_path), caption="Detections", use_container_width=True)
-        else:
-            st.warning("No detections image found (model may have predicted none).")
 
         # Build a small table from labels txt if present
         txts = list(exp_dir.rglob("*.txt"))
