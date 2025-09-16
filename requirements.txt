@@ -9,6 +9,6 @@ tqdm
 jupyter
 streamlit>=1.33
 scikit-learn
-opencv-python
+opencv-python-headless
 # pull YOLOv5 code (detect.py) during build:
 git+https://github.com/ultralytics/yolov5.git
