@@ -220,4 +220,3 @@ with col2:
             st.caption(f"Missing: {fname} (place in app/assets/)")
 
 st.markdown("---")
-st.caption("Tip: to run with GPU on a server/Space, change detect device='0'.")
