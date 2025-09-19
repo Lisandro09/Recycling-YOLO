@@ -3,11 +3,12 @@ opencv-python-headless
 torch
 torchvision
 pandas
-Pillow
+pillow
 numpy
 matplotlib
-PyYAML
+pyyaml
+requests
 tqdm
 jupyter
 scikit-learn
-ultralytics==8.3.0
+
