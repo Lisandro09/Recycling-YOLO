@@ -11,4 +11,4 @@ requests
 tqdm
 jupyter
 scikit-learn
-
+ultralytics
