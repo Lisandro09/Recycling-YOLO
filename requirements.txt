@@ -8,6 +8,7 @@ numpy
 matplotlib
 pyyaml
 requests
+seaborn
 tqdm
 jupyter
 scikit-learn
