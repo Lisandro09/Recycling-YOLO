@@ -12,7 +12,7 @@ import time
 import streamlit as st
 import pandas as pd
 from PIL import Image
-import cv2
+#import cv2
 import numpy as np
 
 # ---- LABEL SIZE OVERLAY ----
