@@ -1,2 +1,4 @@
 # Recycling-YOLO
-This is my capstone project at WGU for class C964. This is a machine learning image recognition project using YOLOv5 convolutional neural network to identify and classify recyclable materials.
+This is my capstone project at WGU for class C964. For this project, the machine learning algorithm, YOLOv5, was used and trained to detect recyclable materials such as plastic bottles, glass bottles, and metal cans. Datasets used included the Drinking Waste Classification dataset on Kaggle uploaded by user Arkadiy Serezhkin https://www.kaggle.com/datasets/arkadiyhacks/drinking-waste-classification, and the TACO dataset uploaded by user pedropro on their GitHub account https://github.com/pedropro/TACO. The YOLOv5 was then integrated into a streamlit app with a user friendly interface so that users to can upload images with recyclable waste and the model would detect the bottles or cans in that image.
+
+This application was uploaded on stream lit as Recycling-YOLOv5, but an updated version of the app with YOLOv11 imporoved the application detecting recyclable items. It can be viewed with this link https://recycling-yolov11-v2.streamlit.app/. 
